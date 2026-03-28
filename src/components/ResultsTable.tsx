@@ -26,7 +26,7 @@ const ResultsTable = ({ cities, title }: ResultsTableProps) => {
           </tr>
         </thead>
         <tbody>
-          {cities.map((city) => (
+          {cities.filter((city) => city.slug !== "disawar").map((city) => (
             <tr key={city.id} className="transition-colors border-b border-black">
               <td className="border-2 border-black px-3 py-4 text-center bg-[#FFE44D] w-1/3">
                 <a href={`/chart/${city.slug}`} className="text-black font-black uppercase text-xl md:text-2xl leading-tight hover:underline block">
