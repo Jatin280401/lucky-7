@@ -37,7 +37,7 @@ const HeroSection = () => {
         <img 
           src="/Lucky-matka.png" 
           alt="Lucky7 Matka Logo" 
-          className="absolute w-[150px] sm:w-[220px] h-auto drop-shadow-md -mt-6 sm:-mt-10" 
+          className="absolute w-[150px] sm:w-[220px] h-auto drop-shadow-md -mt-6 sm:-mt-10 hue-rotate-180 brightness-50 contrast-125 saturate-200" 
         />
       </div>
 
