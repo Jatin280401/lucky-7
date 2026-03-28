@@ -33,10 +33,12 @@ const HeroSection = () => {
   return (
     <div className="bg-background text-center">
       {/* Title bar */}
-      <div className="bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-400 py-4 border-b-2 border-red-600 shadow-md">
-        <h1 className="text-black text-4xl sm:text-5xl font-black tracking-wider">
-          LUCKY7-MATKA
-        </h1>
+      <div className="bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-400 h-32 sm:h-48 border-b-2 border-red-600 shadow-md relative flex justify-center items-center overflow-hidden">
+        <img 
+          src="/Lucky-matka.png" 
+          alt="Lucky7 Matka Logo" 
+          className="absolute w-[150px] sm:w-[220px] h-auto drop-shadow-md -mt-6 sm:-mt-10" 
+        />
       </div>
 
       {/* Main section with results */}
