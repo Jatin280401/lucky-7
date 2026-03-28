@@ -13,7 +13,7 @@ const ResultsTable = ({ cities, title }: ResultsTableProps) => {
       )}
       <table className="w-full border-collapse border-2 border-black">
         <thead>
-          <tr className="bg-yellow-400">
+          <tr className="bg-[#FFE44D]">
             <th className="border-2 border-black px-3 py-2 text-black font-black text-xs">
               सट्टा का नाम
             </th>
@@ -28,7 +28,7 @@ const ResultsTable = ({ cities, title }: ResultsTableProps) => {
         <tbody>
           {cities.map((city) => (
             <tr key={city.id} className="transition-colors border-b border-black">
-              <td className="border-2 border-black px-3 py-4 text-center bg-primary w-1/3">
+              <td className="border-2 border-black px-3 py-4 text-center bg-[#FFE44D] w-1/3">
                 <a href={`/chart/${city.slug}`} className="text-black font-black uppercase text-xl md:text-2xl leading-tight hover:underline block">
                   {city.name}
                 </a>

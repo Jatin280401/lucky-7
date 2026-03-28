@@ -29,7 +29,7 @@ const TimingSection = () => {
         <div key={khaiwal.id} className="w-full md:w-[calc(50%-1.5rem)] max-w-xl mx-auto flex flex-col mb-4">
           
           {/* Khaiwal Schedule Block */}
-          <div className="w-full bg-[#f6d000] rounded-[30px] border-[2px] border-dotted border-red-600 px-4 py-8 text-center text-black shadow-md z-10 relative">
+          <div className="w-full bg-[#FFE44D] rounded-[30px] border-[2px] border-dotted border-red-600 px-4 py-8 text-center text-black shadow-md z-10 relative">
             <p className="font-bold text-lg mb-2">⚕️💠🕉️💠🕉️💠🕉️⚕️</p>
             <p className="font-bold text-lg mb-1">➡️ सीधे सट्टा कंपनी का No1 खाईवाल-- ⬅️</p>
             <p className="font-black text-2xl mb-4">♕♕ {khaiwal.name} ♕♕</p>
