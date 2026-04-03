@@ -5,30 +5,8 @@ import Footer from "@/components/Footer";
 import { useData } from "@/hooks/useData";
 import { City } from "@/lib/data";
 import { useState, useEffect } from "react";
-import { historicalChartData } from "@/lib/chartData";
 
 const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-
-function getCityData(slug: string): Record<string, string[]> {
-  if (historicalChartData[slug]) return historicalChartData[slug];
-
-  // Deterministic seed-based number generation to keep results fixed on refresh
-  const getStaticValue = (month: string, day: number) => {
-    const seed = `${slug}-${month}-${day}-2026`;
-    let hash = 0;
-    for (let i = 0; i < seed.length; i++) {
-        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
-        hash |= 0;
-    }
-    return String(Math.abs(hash) % 100).padStart(2, "0");
-  };
-
-  return {
-    JAN: Array.from({length: 31}, (_, i) => getStaticValue("JAN", i + 1)),
-    FEB: Array.from({length: 31}, (_, i) => i < 28 ? getStaticValue("FEB", i + 1) : ""),
-    MAR: Array.from({length: 31}, (_, i) => i < 7 ? getStaticValue("MAR", i + 1) : ""),
-  };
-}
 
 const CityChart = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -41,7 +19,6 @@ const CityChart = () => {
   }, [slug, cities]);
 
   const cityName = cityData ? cityData.name : (slug ? slug.replace(/-/g, " ") : "Unknown");
-  const data = getCityData(slug || "");
   
   // Real-time injection logic
   const now = new Date();
@@ -103,7 +80,7 @@ const CityChart = () => {
                   {day}
                 </td>
                 {months.map((m) => {
-                  let val = data[m] ? data[m][day - 1] || "" : "";
+                  let val = "";
                   
                   // Inject actual historical data from Supabase DB storage
                   if (cityData?.chart_data && cityData.chart_data[m]) {
