@@ -24,6 +24,17 @@ export const parseTime = (timeStr: string) => {
   return hours * 60 + minutes;
 };
 
+export const getISTDate = () => {
+  const d = new Date();
+  // Add 5 hours 30 mins (19,800,000 ms) to UTC to align UTC time with IST time
+  return new Date(d.getTime() + 19800000);
+};
+
+export const getISTDateString = () => {
+  const ist = getISTDate();
+  return `${ist.getUTCFullYear()}-${String(ist.getUTCMonth() + 1).padStart(2, '0')}-${String(ist.getUTCDate()).padStart(2, '0')}`;
+};
+
 export type TopResult = {
   id: string;
   cityName: string;
@@ -112,7 +123,12 @@ export const defaultCities: City[] = [
   { 
     id: "system-date-tracker", 
     name: "System Date Tracker", 
-    timing: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`, 
+    timing: (() => {
+      // Inline execution just for init if defaultCities is hoisted before getISTDateString
+      const d = new Date();
+      const ist = new Date(d.getTime() + 19800000);
+      return `${ist.getUTCFullYear()}-${String(ist.getUTCMonth() + 1).padStart(2, '0')}-${String(ist.getUTCDate()).padStart(2, '0')}`;
+    })(), 
     yesterdayResult: "", 
     todayResult: "", 
     slug: "system-date-tracker", 
@@ -142,13 +158,7 @@ export const defaultTopResults: TopResult[] = [
 ];
 
 export async function syncDailyReset(cities: City[]) {
-  const getFormattedDate = () => {
-    // Generate a reliable YYYY-MM-DD local string instead of variable toDateString
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  };
-
-  const currentDate = getFormattedDate();
+  const currentDate = getISTDateString();
   const storedDate = localStorage.getItem("satta_last_date");
   
   // Find the tracker
@@ -211,11 +221,7 @@ export function getCities(): City[] {
   const stored = localStorage.getItem("satta_cities");
   const storedDate = localStorage.getItem("satta_last_date");
 
-  const getFormattedDate = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  };
-  const currentDate = getFormattedDate();
+  const currentDate = getISTDateString();
 
   let cities = defaultCities;
   if (stored) {
@@ -254,8 +260,7 @@ export function getCities(): City[] {
 }
 
 export async function saveCities(cities: City[]) {
-  const d = new Date();
-  const currentDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const currentDate = getISTDateString();
   
   localStorage.setItem("satta_cities", JSON.stringify(cities));
   localStorage.setItem("satta_last_date", currentDate);
@@ -282,8 +287,7 @@ export async function saveCities(cities: City[]) {
 }
 
 export async function resetCitiesToDefaults() {
-  const d = new Date();
-  const currentDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const currentDate = getISTDateString();
 
   localStorage.setItem("satta_cities", JSON.stringify(defaultCities));
   localStorage.setItem("satta_last_date", currentDate);
@@ -359,8 +363,8 @@ export async function deleteKhaiwal(id: string) {
 
 export function getTopResults(citiesParam?: City[]): TopResult[] {
   const cities = (citiesParam || getCities()).filter(c => c.id !== "system-date-tracker");
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const ist = getISTDate();
+  const currentMinutes = ist.getUTCHours() * 60 + ist.getUTCMinutes();
   
   const sortedCities = [...cities].sort((a, b) => parseTime(a.timing) - parseTime(b.timing));
   

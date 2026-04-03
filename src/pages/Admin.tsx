@@ -16,6 +16,7 @@ import {
   parseTime,
   defaultCities,
   resetCitiesToDefaults,
+  getISTDate,
 } from "@/lib/data";
 import { useData } from "@/hooks/useData";
 import { supabase } from "@/lib/supabase";
@@ -81,10 +82,10 @@ const Admin = () => {
 
   const handleUpdateCity = async (city: City) => {
     // Generate static date representations for the exact moment of saving
-    const now = new Date();
+    const now = getISTDate();
     const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-    const currentMonth = months[now.getMonth()];
-    const currentDayIdx = now.getDate() - 1; // 0-indexed for array positions
+    const currentMonth = months[now.getUTCMonth()];
+    const currentDayIdx = now.getUTCDate() - 1; // 0-indexed for array positions
 
     // Ensure slug matches the name
     const updatedCity = {
@@ -103,10 +104,10 @@ const Admin = () => {
 
     // Also map yesterdayResult permanently into history if available
     if (updatedCity.yesterdayResult && updatedCity.yesterdayResult !== "--") {
-      const yesterday = new Date(now);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yestMonth = months[yesterday.getMonth()];
-      const yestDayIdx = yesterday.getDate() - 1;
+      const yesterday = new Date(now.getTime());
+      yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+      const yestMonth = months[yesterday.getUTCMonth()];
+      const yestDayIdx = yesterday.getUTCDate() - 1;
 
       if (!updatedCity.chart_data[yestMonth]) {
         updatedCity.chart_data[yestMonth] = Array.from({length: 31}, () => "");
@@ -470,9 +471,6 @@ interface CityListProps {
 }
 
 const CityList = ({ cities, editingCity, onEdit, onUpdate, onDelete }: CityListProps) => {
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
   return (
     <div className="space-y-2">
       {cities.map((city) => (

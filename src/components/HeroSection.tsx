@@ -24,10 +24,11 @@ const HeroSection = () => {
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
+      timeZone: "Asia/Kolkata",
       month: "long",
       day: "numeric",
       year: "numeric",
-    }) + " " + date.toLocaleTimeString("en-US");
+    }) + " " + date.toLocaleTimeString("en-US", { timeZone: "Asia/Kolkata" });
   };
 
   return (
