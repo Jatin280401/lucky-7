@@ -286,41 +286,6 @@ export async function saveCities(cities: City[]) {
   }
 }
 
-export async function resetCitiesToDefaults() {
-  const currentDate = getISTDateString();
-
-  localStorage.setItem("satta_cities", JSON.stringify(defaultCities));
-  localStorage.setItem("satta_last_date", currentDate);
-  
-  if (supabase) {
-    // Delete all existing records to ensure perfect cleanup
-    // We use a safe comparison to delete all - checking if id is not null/empty
-    const { error: deleteError } = await supabase.from("cities").delete().neq("id", "");
-    
-    if (deleteError) {
-      console.error("Error clearing cities table:", deleteError);
-      throw deleteError;
-    }
-    
-    const insertData = defaultCities.map(c => ({
-      id: c.id,
-      name: c.name,
-      timing: c.timing,
-      "yesterdayResult": c.yesterdayResult,
-      "todayResult": c.todayResult,
-      slug: c.slug,
-      "group": c.group,
-      "order": c.order,
-      chart_data: c.chart_data || {}
-    }));
-    
-    const { error: insertError } = await supabase.from("cities").insert(insertData);
-    if (insertError) {
-      console.error("Error inserting default cities:", insertError);
-      throw insertError;
-    }
-  }
-}
 
 export async function deleteCity(id: string) {
   if (supabase) {

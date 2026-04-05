@@ -13,31 +13,32 @@ const ResultsTable = ({ cities, title }: ResultsTableProps) => {
       )}
       <table className="w-full border-collapse border-2 border-black">
         <thead>
-          <tr className="bg-[#FFE44D]">
-            <th className="border-2 border-black px-3 py-2 text-black font-black text-xs">
+          <tr className="bg-[#FFE44D] border-b-2 border-black">
+            <th className="px-3 py-2 text-black font-black text-xs">
               सट्टा का नाम
             </th>
-            <th className="border-2 border-black px-3 py-2 text-black font-black text-xs uppercase">
+            <th className="px-3 py-2 text-black font-black text-xs uppercase">
               कल आया था
             </th>
-            <th className="border-2 border-black px-3 py-2 text-black font-black text-xs uppercase">
+            <th className="px-3 py-2 text-black font-black text-xs uppercase">
               आज का रिज़ल्ट
             </th>
           </tr>
         </thead>
         <tbody>
           {cities.filter((city) => city.slug !== "disawar").map((city) => (
-            <tr key={city.id} className="transition-colors border-b border-black">
-              <td className="border-2 border-black px-3 py-4 text-center bg-[#FFE44D] w-1/3">
+            <tr key={city.id} className="transition-colors border-b-2 border-black">
+              <td className="px-3 py-4 text-center bg-[#FFE44D] w-1/3 relative">
+                {/* Horizontal line pseudo-element might be needed if borders behave weirdly, but border-b-2 should work */}
                 <a href={`/chart/${city.slug}`} className="text-black font-black uppercase text-xl md:text-2xl leading-tight hover:underline block">
                   {city.name}
                 </a>
                 <span className="text-black font-bold text-base md:text-lg">{city.timing}</span>
               </td>
-              <td className="border-2 border-black px-3 py-4 text-center text-black font-black text-3xl md:text-4xl bg-white w-1/3">
+              <td className="px-3 py-4 text-center text-black font-black text-3xl md:text-4xl bg-white w-1/3">
                 {city.yesterdayResult}
               </td>
-              <td className="border-2 border-black px-3 py-4 text-center bg-white w-1/3">
+              <td className="px-3 py-4 text-center bg-white w-1/3">
                 {city.todayResult ? (
                   <span className="text-black font-black text-3xl md:text-4xl">{city.todayResult}</span>
                 ) : (
