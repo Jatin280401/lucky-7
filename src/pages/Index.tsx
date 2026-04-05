@@ -29,8 +29,8 @@ const Index = () => {
       <HeroSection />
 
       <div className="w-full bg-gradient-to-r from-yellow-300 via-yellow-200 to-yellow-300 py-3 px-4 text-center border-y-[1.5px] border-solid border-red-500 my-1 shadow-sm">
-        <a href="/chart/disawer" className="text-blue-700 font-bold uppercase underline text-xs md:text-sm">LUCKY7MATKA DISAWER CHART</a>
-        <span className="text-black font-bold uppercase text-xs md:text-sm"> FOR {(new Date()).getFullYear() + 1} IS AVAILABLE</span>
+        <a href="/chart/disawar" className="text-blue-700 font-bold uppercase underline text-xs md:text-sm">LUCKY7MATKA DISAWER CHART</a>
+        <span className="text-black font-bold uppercase text-xs md:text-sm"> FOR {(new Date()).getFullYear()} IS AVAILABLE</span>
       </div>
 
       <div className="w-full bg-gradient-to-r from-orange-300 via-yellow-200 to-orange-300 py-3 px-4 text-center border-y-[1.5px] border-solid border-red-500 my-1 shadow-sm">
@@ -40,7 +40,7 @@ const Index = () => {
 
       <div className="w-full bg-gradient-to-r from-yellow-300 via-yellow-200 to-yellow-300 py-3 px-4 text-center border-y-[1.5px] border-solid border-red-500 my-1 shadow-sm">
         <span className="text-black font-bold uppercase text-xs md:text-sm">CHECK UPDATED SHREE GANESH SATTA KING CHART </span>
-        <a href="/chart/shri-ganesh" className="text-blue-700 font-bold uppercase underline text-xs md:text-sm">HERE</a>
+        <a href="/chart/shree-ganesh" className="text-blue-700 font-bold uppercase underline text-xs md:text-sm">HERE</a>
       </div>
 
       <TimingSection />
