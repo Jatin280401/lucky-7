@@ -32,7 +32,9 @@ export const getISTDate = () => {
 
 export const getISTDateString = () => {
   const ist = getISTDate();
-  return `${ist.getUTCFullYear()}-${String(ist.getUTCMonth() + 1).padStart(2, '0')}-${String(ist.getUTCDate()).padStart(2, '0')}`;
+  // Subtract 15 minutes (900,000 ms) to delay the date shift until 12:15 AM IST
+  const shiftTime = new Date(ist.getTime() - 900000);
+  return `${shiftTime.getUTCFullYear()}-${String(shiftTime.getUTCMonth() + 1).padStart(2, '0')}-${String(shiftTime.getUTCDate()).padStart(2, '0')}`;
 };
 
 export type TopResult = {
@@ -126,7 +128,8 @@ export const defaultCities: City[] = [
     timing: (() => {
       // Inline execution just for init if defaultCities is hoisted before getISTDateString
       const d = new Date();
-      const ist = new Date(d.getTime() + 19800000);
+      // Add 5h30m (19,800,000 ms) to align with IST, then subtract 15 mins (900,000 ms) for delayed shift = +18,900,000 ms
+      const ist = new Date(d.getTime() + 18900000);
       return `${ist.getUTCFullYear()}-${String(ist.getUTCMonth() + 1).padStart(2, '0')}-${String(ist.getUTCDate()).padStart(2, '0')}`;
     })(), 
     yesterdayResult: "", 
