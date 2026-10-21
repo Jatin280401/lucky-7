@@ -21,6 +21,8 @@ import { useData } from "@/hooks/useData";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 
+const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -39,6 +41,11 @@ const Admin = () => {
     group: "main",
     order: 0,
   });
+
+  // --- Yearly Chart Editor state ---
+  const [chartEditCityId, setChartEditCityId] = useState<string | null>(null);
+  const [chartEditData, setChartEditData] = useState<Record<string, string[]>>({});
+  const [chartSaving, setChartSaving] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -186,8 +193,63 @@ const Admin = () => {
     navigate("/login");
   };
 
+  // --- Yearly Chart Editor handlers ---
+  const openChartEditor = (city: City) => {
+    // Deep-clone the chart_data so edits don't mutate the original until saved
+    const cloned: Record<string, string[]> = {};
+    for (const m of MONTHS) {
+      const existing = city.chart_data?.[m] || [];
+      cloned[m] = Array.from({ length: 31 }, (_, i) => existing[i] || "");
+    }
+    setChartEditCityId(city.id);
+    setChartEditData(cloned);
+  };
+
+  const closeChartEditor = () => {
+    setChartEditCityId(null);
+    setChartEditData({});
+  };
+
+  const handleChartCellChange = (month: string, dayIdx: number, value: string) => {
+    setChartEditData((prev) => {
+      const updated = { ...prev };
+      updated[month] = [...(updated[month] || Array.from({ length: 31 }, () => ""))];
+      updated[month][dayIdx] = value;
+      return updated;
+    });
+  };
+
+  const handleChartSubmit = async () => {
+    if (!chartEditCityId) return;
+    setChartSaving(true);
+    try {
+      const updatedCities = cities.map((c) => {
+        if (c.id === chartEditCityId) {
+          return { ...c, chart_data: chartEditData };
+        }
+        return c;
+      });
+      await handleSaveCities(updatedCities);
+      toast({
+        title: "Chart Updated",
+        description: `Yearly chart data saved successfully.`,
+      });
+      closeChartEditor();
+    } catch (err: any) {
+      toast({
+        title: "Save Error",
+        description: `Failed to save chart data: ${err.message || "Unknown error"}.`,
+        variant: "destructive",
+      });
+    } finally {
+      setChartSaving(false);
+    }
+  };
+
   const mainCities = cities.filter((c) => c.group === "main" && c.id !== "system-date-tracker").sort((a, b) => a.order - b.order);
   const secondaryCities = cities.filter((c) => c.group === "secondary" && c.id !== "system-date-tracker").sort((a, b) => a.order - b.order);
+  const allEditableCities = cities.filter((c) => c.id !== "system-date-tracker").sort((a, b) => a.order - b.order);
+  const chartEditCity = chartEditCityId ? cities.find((c) => c.id === chartEditCityId) : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -410,6 +472,109 @@ const Admin = () => {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* ===== Edit Yearly Charts Section ===== */}
+        <section className="mb-8">
+          <div className="flex justify-between items-center mb-4 border-b border-border pb-2">
+            <h2 className="text-foreground font-bold text-xl">Edit Yearly Charts</h2>
+          </div>
+
+          {/* City selector buttons */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {allEditableCities.map((city) => (
+              <button
+                key={city.id}
+                onClick={() =>
+                  chartEditCityId === city.id ? closeChartEditor() : openChartEditor(city)
+                }
+                className={`px-4 py-2 rounded font-bold text-sm transition-colors ${
+                  chartEditCityId === city.id
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-foreground border border-border hover:bg-primary/20"
+                }`}
+              >
+                {city.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Editable Chart Table */}
+          {chartEditCity && (
+            <div className="bg-secondary p-4 rounded border border-border">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-primary font-bold text-lg uppercase">
+                  {chartEditCity.name} — Yearly Chart 2026
+                </h3>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleChartSubmit}
+                    disabled={chartSaving}
+                    className="bg-primary text-primary-foreground px-5 py-2 rounded font-bold text-sm hover:bg-yellow-dark disabled:opacity-50"
+                  >
+                    {chartSaving ? "Saving…" : "Submit Changes"}
+                  </button>
+                  <button
+                    onClick={closeChartEditor}
+                    className="bg-muted text-muted-foreground px-4 py-2 rounded font-bold text-sm"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-border text-sm">
+                  <thead>
+                    <tr className="bg-primary">
+                      <th className="border border-border px-2 py-2 text-primary-foreground font-bold text-xs">
+                        Day
+                      </th>
+                      {MONTHS.map((m) => (
+                        <th
+                          key={m}
+                          className="border border-border px-2 py-2 text-primary-foreground font-bold text-xs"
+                        >
+                          {m}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: 31 }, (_, i) => i).map((dayIdx) => (
+                      <tr key={dayIdx} className="bg-background hover:bg-muted/20 transition-colors">
+                        <td className="border border-border px-2 py-1 text-center text-primary font-bold text-sm">
+                          {dayIdx + 1}
+                        </td>
+                        {MONTHS.map((m) => (
+                          <td key={m} className="border border-border p-0">
+                            <input
+                              type="text"
+                              value={chartEditData[m]?.[dayIdx] ?? ""}
+                              onChange={(e) => handleChartCellChange(m, dayIdx, e.target.value)}
+                              className="w-full bg-transparent text-center text-foreground font-bold text-sm px-1 py-1.5 outline-none focus:bg-primary/10 transition-colors"
+                              style={{ minWidth: "40px" }}
+                              maxLength={3}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={handleChartSubmit}
+                  disabled={chartSaving}
+                  className="bg-primary text-primary-foreground px-6 py-2.5 rounded font-bold text-sm hover:bg-yellow-dark disabled:opacity-50"
+                >
+                  {chartSaving ? "Saving…" : "Submit Changes"}
+                </button>
+              </div>
+            </div>
+          )}
         </section>
       </div>
     </div>
